@@ -4,23 +4,22 @@ library(bycatch)
 
 options(mc.cores = parallel::detectCores()) # run in parallel
 
-# set paths to input and output data:
-  path_in = "G:/Shared drives/NMFS NWC FRAM FOS DATA/observerData/Analysis_Library/Product Library/2025/MMSBST/multistream_git/"
-  path_out = "G:/Shared drives/NMFS NWC FRAM FOS DATA/observerData/Analysis_Library/Product Library/2025/MMSBST/multistream_git/"
+# read in synthesized versions of haul-level data sets for CS EM Bottom Trawl 2015-2023
+  # note the original datasets used for this research are confidential, so data were obscured using R library synthpop
 
-# read in haul-level data sets for CS EM Bottom Trawl 2015-2023:
-  # Observer data loads as a dataframe named ob_haul_git
-  load(paste0(path_in, "ob_haul_git.RDA"))
+  # Observer data loads as a dataframe named ob_haul
+  load("ob_haul.RDA")
   
-  # EM data loads as a data.table named em_haul_git
-  load(paste0(path_in, "em_haul_git.RDA"))
+  # EM data loads as a data.table named em_haul
+  load("em_haul.RDA")
   
 # read in summarized data set for CS EM Bottom Trawl 2015-2024
+  # note these data are not confidential, so are equivalent to those used in this research
   # full dataset: loads as dat_summ
-    load(paste0(path_in, "dat_summ.RDA"))
+    load("dat_summ.RDA")
   
   # only annual fleetwide retained: loads as fleet_summ_ret
-    load(paste0(path_in, "fleet_summ_ret.RDA"))
+    load("fleet_summ_ret.RDA")
     
     
   
@@ -47,21 +46,21 @@ options(mc.cores = parallel::detectCores()) # run in parallel
     
     # Subsample EM data: 
       # Randomly select 10% of hauls per trip, with a minimum of 1 haul per trip
-      em_haul_subsample <- data.frame(em_haul_git[, .SD[sample(.N, max(1, round(0.1 * .N)))], by = uni_trip_id])
+      em_haul_subsample <- data.frame(em_haul[, .SD[sample(.N, max(1, round(0.1 * .N)))], by = uni_trip_id])
       
     # Identify & summarize data from re-sampled hauls:
       
       # (1) Reviewed EM video with no observer on board
         # remove hauls that were also observed
-          haul_dat_em <- em_haul_subsample[which(!(em_haul_subsample$uni_haul_id %in% unique(ob_haul_git$uni_haul_id))), ]
+          haul_dat_em <- em_haul_subsample[which(!(em_haul_subsample$uni_haul_id %in% unique(ob_haul$uni_haul_id))), ]
           
       # (2) Unreviewed EM video with an observer on board
         # remove hauls that had video reviewed
-          haul_dat_obs <- ob_haul_git[which(!(ob_haul_git$uni_haul_id %in% unique(em_haul_subsample$uni_haul_id))), ]
+          haul_dat_obs <- ob_haul[which(!(ob_haul$uni_haul_id %in% unique(em_haul_subsample$uni_haul_id))), ]
             
       # (3) Reviewed EM video with an observer on board
         # select only hauls with reviewed video from observer dataset
-          haul_dat_obs_em <- ob_haul_git[which(ob_haul_git$uni_haul_id %in% unique(em_haul_subsample$uni_haul_id)), ]
+          haul_dat_obs_em <- ob_haul[which(ob_haul$uni_haul_id %in% unique(em_haul_subsample$uni_haul_id)), ]
         
         # re-label those hauls to indicate they were both observed and had EM video reviewed
           haul_dat_obs_em$stream[haul_dat_obs_em$uni_haul_id %in% unique(em_haul_subsample$uni_haul_id)] <- "OBS_EM"
