@@ -1,9 +1,11 @@
+# Set up ------------------------------------------------------------------
 library(data.table) # using this for sampling
 library(tidyverse)
 library(bycatch)
 
 options(mc.cores = parallel::detectCores()) # run in parallel
 
+# Load data ---------------------------------------------------------------
 # read in synthesized versions of haul-level data sets for CS EM Bottom Trawl 2015-2023
 # note the original datasets used for this research are confidential, so data were obscured using R library synthpop
 
@@ -22,8 +24,7 @@ load("dat_summ.RDA")
 load("fleet_summ_ret.RDA")
 
 
-
-# Case Study 1: Simulation of Partial EM Video Review
+# Case Study 1: Simulation of Partial EM Video Review ---------------------
 
 # Setting up simulation
 
@@ -207,7 +208,7 @@ write.csv(simulated_data_output, paste0(path_out, "case_study_1_output_runs=", r
 )
 
 
-# Figure 1: Visualization for Case Study 1
+# Figure 1: Visualization for Case Study 1 --------------------------------
 
 # Calculate known takes from census-monitored data for comparison
 census_takes <- dat_summ %>%
@@ -278,7 +279,9 @@ ggplot() +
     strip.text = element_text(face = "bold")
   )
 
-# Supplementary Figure 1: Distribution of Errors in Case Study 1
+
+# Supplementary Figure 1: Distribution of Errors in Case Study 1 ----------
+
 # summarise totals of mean estimates by run and species
 exp_stats_sum <- simulated_data_output %>%
   group_by(common_name, run) %>%
@@ -307,8 +310,9 @@ ggplot(simulated_data_summ_error, aes(x = error, fill = common_name)) +
 
 
 
+# Case Study 2 - Estimate bycatch in 2024 for all species -----------------
 
-# Case Study 2 - Estimate bycatch in 2024 for all species using models with:
+# using models with:
 # (1) only observed data
 # (2) only EM video review data
 # (3) both observed and EM video review data
@@ -450,6 +454,8 @@ write.csv(simulated_data_output, paste0(path_out, "case_study_1_output_runs=", r
   row.names = F
 )
 
+
+# Figure ------------------------------------------------------------------
 
 # extract only estimates from 2024, as we're interested in comparing expansions
 # only for the year with partial EM video review
