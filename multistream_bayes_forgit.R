@@ -2,6 +2,7 @@
 library(data.table) # using this for sampling
 library(tidyverse)
 library(bycatch)
+library(here)
 
 options(mc.cores = parallel::detectCores()) # run in parallel
 
@@ -168,7 +169,7 @@ for (i in 1:runs) {
       # Save model fit
       model_name <- paste0("model_", cn_temp, "_run_", i)
       assign(x = as.character(model_name), fit)
-      save(list = model_name, file = paste0(path_out, model_name, ".RDA"))
+      save(list = model_name, file = here(paste0(model_name, ".RDA")))
 
       # Calculate expansions
       extract_expansions <- bycatch::get_total(fit)
@@ -200,11 +201,15 @@ simulated_data_input <- bind_rows(simulated_data_input)
 simulated_data_output <- bind_rows(simulated_data_output)
 
 # output those datasets
-write.csv(simulated_data_input, paste0(path_out, "case_study_1_input_runs=", runs, ".csv"),
+write.csv(
+  x = simulated_data_input,
+  file = here(paste0("case_study_1_input_runs_", runs, ".csv")),
   row.names = F
 )
 
-write.csv(simulated_data_output, paste0(path_out, "case_study_1_output_runs=", runs, ".csv"),
+write.csv(
+  x = simulated_data_output,
+  file = here(paste0("case_study_1_output_runs_", runs, ".csv")),
   row.names = F
 )
 
@@ -398,8 +403,7 @@ for (model_dat_temp in all_model_dat) {
         model_dat_temp
       )
       assign(x = as.character(model_name), fit)
-      save(list = model_name, file = paste0(path_out, model_name, ".RDA"))
-
+      save(list = model_name, file = here(paste0(gsub(" ", "_", model_name), ".RDA")))
 
       # calculate expansions
       extract_expansions <- bycatch::get_total(fit)
@@ -451,7 +455,9 @@ for (model_dat_temp in all_model_dat) {
 
 # KS bad wolf - if Eric doesn't introduce a warning suppression here, add a note for users
 
-write.csv(simulated_data_output, paste0(path_out, "case_study_1_output_runs=", runs, ".csv"),
+write.csv(
+  x = simulated_data_output, 
+  file = here(paste0("case_study_1_output_runs_", runs, ".csv")),
   row.names = F
 )
 
