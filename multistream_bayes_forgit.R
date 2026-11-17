@@ -507,7 +507,7 @@ model_output_24$common_name <- factor(model_output_24$common_name,
 )
 
 # label estimated takes based on which data were included in model:
-model_output_24$Model <- factor(model_output_24$Model, levels = c(
+model_output_24$Model <- factor(model_output_24$model, levels = c(
   "Single Stream: EM",
   "Single Stream: OB",
   "Multi-Stream"
