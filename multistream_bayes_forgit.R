@@ -11,20 +11,19 @@ options(mc.cores = parallel::detectCores()) # run in parallel
 # note the original datasets used for this research are confidential, so data were obscured using R library synthpop
 
 # Observer data loads as a dataframe named ob_haul
-load("ob_haul.RDA")
+load("data/input/ob_haul.RDA")
 
 # EM data loads as a data.table named em_haul
-load("em_haul.RDA")
+load("data/input/em_haul.RDA")
 setDT(em_haul)
 
 # read in summarized data set for CS EM Bottom Trawl 2015-2024
 # note these data are not confidential, so are equivalent to those used in this research
 # full dataset: loads as dat_summ
-load("dat_summ.RDA")
+load("data/input/dat_summ.RDA")
 
 # only annual fleetwide retained: loads as fleet_summ_ret
-load("fleet_summ_ret.RDA")
-
+load("data/input/fleet_summ_ret.RDA")
 
 # Case Study 1: Simulation of Partial EM Video Review ---------------------
 
