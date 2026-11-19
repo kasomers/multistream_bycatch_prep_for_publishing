@@ -6,6 +6,11 @@ library(here)
 
 options(mc.cores = parallel::detectCores()) # run in parallel
 
+# create directory for data output, if it doesn't exist yet
+if(!dir.exists(here("data/output"))) {
+  dir.create(here("data/output"))
+}
+
 # Load data ---------------------------------------------------------------
 # read in synthesized versions of haul-level data sets for CS EM Bottom Trawl 2015-2023
 # note the original datasets used for this research are confidential, so data were obscured using R library synthpop
@@ -168,7 +173,7 @@ for (i in 1:runs) {
       # Save model fit
       model_name <- paste0("model_", cn_temp, "_run_", i)
       assign(x = as.character(model_name), fit)
-      save(list = model_name, file = here(paste0(model_name, ".RDA")))
+      save(list = model_name, file = here("data/output", paste0(model_name, ".RDA")))
 
       # Calculate expansions
       extract_expansions <- bycatch::get_total(fit)
@@ -202,13 +207,13 @@ simulated_data_output <- bind_rows(simulated_data_output)
 # output those datasets
 write.csv(
   x = simulated_data_input,
-  file = here(paste0("case_study_1_input_runs_", runs, ".csv")),
+  file = here("data/output", paste0("case_study_1_input_runs_", runs, ".csv")),
   row.names = F
 )
 
 write.csv(
   x = simulated_data_output,
-  file = here(paste0("case_study_1_output_runs_", runs, ".csv")),
+  file = here("data/output", paste0("case_study_1_output_runs_", runs, ".csv")),
   row.names = F
 )
 
@@ -284,7 +289,6 @@ ggplot() +
     strip.text = element_text(face = "bold")
   )
 
-
 # Supplementary Figure 1: Distribution of Errors in Case Study 1 ----------
 
 # summarise totals of mean estimates by run and species
@@ -312,8 +316,6 @@ ggplot(simulated_data_summ_error, aes(x = error, fill = common_name)) +
     panel.grid.minor = element_blank(),
     strip.text = element_text(face = "bold")
   )
-
-
 
 # Case Study 2 - Estimate bycatch in 2024 for all species -----------------
 
@@ -347,7 +349,7 @@ for (model_dat_temp in all_model_dat) {
         fit <- fit_bycatch(takes ~ 1,
           data = dat_temp_cn,
           time = "year",
-          effort = "monitored_retained_weight ",
+          effort = "monitored_retained_weight",
           family = "poisson",
           time_varying = FALSE,
           covrate = "CovRate",
@@ -402,7 +404,7 @@ for (model_dat_temp in all_model_dat) {
         model_dat_temp
       )
       assign(x = as.character(model_name), fit)
-      save(list = model_name, file = here(paste0(gsub(" ", "_", model_name), ".RDA")))
+      save(list = model_name, file = here("data/output", paste0(gsub(" ", "_", model_name), ".RDA")))
 
       # calculate expansions
       extract_expansions <- bycatch::get_total(fit)
@@ -456,7 +458,7 @@ for (model_dat_temp in all_model_dat) {
 
 write.csv(
   x = simulated_data_output, 
-  file = here(paste0("case_study_1_output_runs_", runs, ".csv")),
+  file = here("data/output", paste0("case_study_1_output_runs_", runs, ".csv")),
   row.names = F
 )
 
@@ -530,3 +532,4 @@ ggplot(model_output_24, aes(x = common_name, y = est_mean, group = Model, color 
     axis.title.x = element_blank(),
     strip.text = element_text(face = "bold")
   )
+
