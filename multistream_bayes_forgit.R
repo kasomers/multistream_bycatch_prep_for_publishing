@@ -35,13 +35,16 @@ load("data/input/fleet_summ_ret.RDA")
 # Setting up simulation
 
 # Set number of runs
-runs <- 500
+runs <- 10
 
 # Set seed to make simulations reproducible
 set.seed(3210)
 
-# Create a list of species in data:
-all_cn <- c("California Sea Lion", "Northern Elephant Seal")
+# Create a list of species in haul data
+all_cn_haul <- unique(c(
+  unique(na.omit(em_haul$common_name)),
+  unique(na.omit(ob_haul$common_name))
+))
 
 # Initialize lists for output
 simulated_data_input <- list() # formerly bayes_in_full
@@ -102,7 +105,7 @@ for (i in 1:runs) {
   simulated_data_input_run <- list()
   simulated_data_output_run <- list()
 
-  for (cn_temp in all_cn) {
+  for (cn_temp in all_cn_haul) {
     # Check if this species was recorded in this run's resampled data
     has_takes <- cn_temp %in% sampled_takes_summ$common_name
 
@@ -221,11 +224,12 @@ write.csv(
 # Figure 1: Visualization for Case Study 1 --------------------------------
 
 # Calculate known takes from census-monitored data for comparison
-census_takes <- dat_summ %>%
-  filter(year < 2024, common_name %in% all_cn) %>%
+census_takes <- rbind(em_haul, ob_haul) %>%
   group_by(common_name, year) %>%
   summarise(takes = sum(takes), .groups = "drop_last") %>%
-  data.frame()
+  data.frame() %>%
+  complete(year, common_name, fill = list(takes = 0)) %>%
+  filter(!is.na(common_name))
 
 # Summarize simulated output across runs for each year and species
 sim_summary <- simulated_data_output %>%
