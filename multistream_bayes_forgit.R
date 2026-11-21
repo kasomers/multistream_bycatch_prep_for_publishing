@@ -31,6 +31,7 @@ load("data/input/dat_summ.RDA")
 load("data/input/fleet_summ_ret.RDA")
 
 # Case Study 1: Simulation of Partial EM Video Review ---------------------
+# Assess how bycatch estimates would differ if only 10% of sets were reviewed
 
 # Setting up simulation
 
@@ -220,8 +221,7 @@ write.csv(
   row.names = F
 )
 
-
-# Figure 1: Visualization for Case Study 1 --------------------------------
+# Figure 1: Case Study 1 Takes --------------------------------------------
 
 # Calculate known takes from census-monitored data for comparison
 census_takes <- rbind(em_haul, ob_haul) %>%
@@ -321,7 +321,8 @@ ggplot(simulated_data_summ_error, aes(x = error, fill = common_name)) +
     strip.text = element_text(face = "bold")
   )
 
-# Case Study 2 - Estimate bycatch in 2024 for all species -----------------
+# Case Study 2:  Estimate 2024 Bycatch for All Species --------------------
+# Compare single and multi-stream bycatch models
 
 # using models with:
 # (1) only observed data
@@ -458,8 +459,7 @@ write.csv(
   row.names = F
 )
 
-
-# Figure ------------------------------------------------------------------
+# Figure 2: Case Study 2 Takes --------------------------------------------
 
 # extract only estimates from 2024, as we're interested in comparing expansions
 # only for the year with partial EM video review
