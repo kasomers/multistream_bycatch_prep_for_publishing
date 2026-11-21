@@ -360,10 +360,8 @@ for (model_dat_temp in all_model_dat) {
           iter = 4000
         )
       }
-    }
-
-    if (model_dat_temp == "Multi-Stream") {
-      d <- dat_temp %>%
+    } else if (model_dat_temp == "Multi-Stream") {
+      d <- dat_temp_cn %>%
         dplyr::mutate(takes = round(takes)) %>%
         pivot_longer(
           cols = c("monitored_retained_weight", "takes", "CovRate"), names_to = "MetricName",
@@ -423,10 +421,9 @@ for (model_dat_temp in all_model_dat) {
         lower95 = apply(extract_expansions, 2, quantile, 0.025),
         upper95 = apply(extract_expansions, 2, quantile, 0.975)
       )
-    }
-
+      
     # if takes did NOT occur in given data stream, everything is zero
-    if (takes_tot == 0) {
+    } else if (takes_tot == 0) {
       model_output_init <- data.frame(
         common_name = cn_temp,
         model_data = model_dat_temp,
@@ -439,21 +436,16 @@ for (model_dat_temp in all_model_dat) {
       )
     }
 
-
     if (cn_temp == all_cn[1]) {
       model_output <- model_output_init
-    }
-
-    if (cn_temp == all_cn[1]) {
+    } else {
       model_output <- rbind(model_output, model_output_init)
     }
   } # end loop through species
 
   if (model_dat_temp == all_model_dat[1]) {
     model_output_full <- model_output
-  }
-
-  if (model_dat_temp != all_model_dat[1]) {
+  } else {
     model_output_full <- rbind(model_output_full, model_output)
   }
 } # end loop through sectors
