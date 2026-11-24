@@ -12,23 +12,28 @@ if(!dir.exists(here("data/output"))) {
 }
 
 # Load data ---------------------------------------------------------------
+
+# For Case Study 1:
 # read in synthesized versions of haul-level data sets for CS EM Bottom Trawl 2015-2023
 # note the original datasets used for this research are confidential, so data were obscured using R library synthpop
 
-# Observer data loads as a dataframe named ob_haul
+# Synthesized observer data loads as a dataframe named ob_haul
 load("data/input/ob_haul.RDA")
 
-# EM data loads as a data.table named em_haul
+# Synthesized EM data loads as a data.table named em_haul
 load("data/input/em_haul.RDA")
 setDT(em_haul)
 
+# For Case Study 2:
 # read in summarized data set for CS EM Bottom Trawl 2015-2024
 # note these data are not confidential, so are equivalent to those used in this research
 # full dataset: loads as dat_summ
 load("data/input/dat_summ.RDA")
 
-# only annual fleetwide retained: loads as fleet_summ_ret
+# annual fleetwide retained weights: loads as fleet_summ_ret
 load("data/input/fleet_summ_ret.RDA")
+
+
 
 # Case Study 1: Simulation of Partial EM Video Review ---------------------
 # Assess how bycatch estimates would differ if only 10% of sets were reviewed
@@ -48,12 +53,13 @@ all_cn_haul <- unique(c(
 ))
 
 # Initialize lists for output
-simulated_data_input <- list() # formerly bayes_in_full
-simulated_data_output <- list() # formerly exp_stats_full
+simulated_data_input <- list() 
+simulated_data_output <- list() 
 zero_runs <- integer(0)
 
 # Re-sample data and fit models
 for (i in 1:runs) {
+  
   # Subsample EM data:
   # Randomly select 10% of hauls per trip, with a minimum of 1 haul per trip
   em_haul_subsample <- data.frame(em_haul[, .SD[sample(.N, max(1, round(0.1 * .N)))], by = uni_trip_id])
@@ -204,7 +210,7 @@ for (i in 1:runs) {
   simulated_data_output[[i]] <- bind_rows(simulated_data_output_run)
 }
 
-# considate re-sampled datasets
+# consolidate re-sampled datasets
 simulated_data_input <- bind_rows(simulated_data_input)
 simulated_data_output <- bind_rows(simulated_data_output)
 
@@ -224,7 +230,8 @@ write.csv(
 # Figure 1: Case Study 1 Takes --------------------------------------------
 
 # Calculate known takes from census-monitored data for comparison
-census_takes <- rbind(em_haul, ob_haul) %>%
+  # Use EM data only, as the OB data is a subset of the EM data and would result in duplicated records
+census_takes <- em_haul %>%
   group_by(common_name, year) %>%
   summarise(takes = sum(takes), .groups = "drop_last") %>%
   data.frame() %>%
